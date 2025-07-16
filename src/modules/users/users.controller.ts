@@ -19,21 +19,21 @@ export class UsersController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  findAll(@Query() query: any) {
+  async findAll(@Query() query: any) {
     return this.usersService.findAll(query);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'user')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return this.usersService.findOne(parseInt(id));
   }
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  createUser(@Body() usersDto: UsersDto) {
+  async createUser(@Body() usersDto: UsersDto) {
     return this.usersService.create(usersDto);
   }
 }

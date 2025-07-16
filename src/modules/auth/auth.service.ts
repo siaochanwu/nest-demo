@@ -4,7 +4,7 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/users.type';
 
 export interface JwtPayload {
-  sub: string;
+  sub: number;
   username: string;
   roles: string[];
   iat?: number;
@@ -14,7 +14,7 @@ export interface JwtPayload {
 export interface LoginResult {
   access_token: string;
   user: {
-    id: string;
+    id: number;
     username: string;
     roles: string[];
   };
@@ -49,7 +49,7 @@ export class AuthService {
     const payload: JwtPayload = {
       sub: user.id,
       username: user.username,
-      roles: user.roles || ['user'],
+      roles: user.roles?.map(role => role.name) || ['user'],
     };
 
     return {
@@ -57,7 +57,7 @@ export class AuthService {
       user: {
         id: user.id,
         username: user.username,
-        roles: user.roles || ['user'],
+        roles: user.roles?.map(role => role.name) || ['user'],
       },
     };
   }

@@ -1,66 +1,72 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { User, UserFilter } from './users.type';
 import { UsersDto } from './dto/users.dto';
+import { RolesService } from '../roles/roles.service';
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [
-    {
-      id: '1',
-      name: 'John',
-      email: 'H2G6A@example.com',
-      mobile: '1234567890',
-      password: 'password',
-      username: 'john',
-      roles: ['admin', 'user'],
-    },
-    {
-      id: '2',
-      name: 'wow',
-      email: '5oQ0w@example.com',
-      mobile: '9876543210',
-      password: 'password',
-      username: 'wow',
-      roles: ['user'],
-    },
-  ];
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    private readonly rolesService: RolesService,
+  ) {}
 
-  findAll(query: UserFilter): User[] {
-    if (query.id) {
-      return this.users.filter((user) => user.id === query.id);
-    }
-    return this.users;
+  async findAll(query: UserFilter): Promise<User[]> {
+    const where: any = {};
+    if (query.id) where.id = query.id;
+    if (query.username) where.username = query.username;
+    if (query.email) where.email = query.email;
+    if (query.name) where.name = query.name;
+    if (query.mobile) where.mobile = query.mobile;
+    
+    return this.userRepository.find({ 
+      where,
+      relations: ['roles'],
+    });
   }
 
-  findOne(id: string): User | undefined {
-    return this.users.find((user) => user.id === id);
+  async findOne(id: number): Promise<User | null> {
+    return this.userRepository.findOne({ 
+      where: { id },
+      relations: ['roles'],
+    });
   }
 
-  findById(id: string): Promise<User | undefined> {
-    return Promise.resolve(this.users.find((user) => user.id === id));
+  async findById(id: number): Promise<User | null> {
+    return this.userRepository.findOne({ 
+      where: { id },
+      relations: ['roles'],
+    });
   }
 
-  findByUsername(username: string): Promise<User | undefined> {
-    return Promise.resolve(
-      this.users.find((user) => user.username === username),
-    );
+  async findByUsername(username: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { username },
+      relations: ['roles'],
+    });
   }
 
-  create(userDto: UsersDto) {
-    const newUser: User = {
-      ...userDto,
-      roles: userDto.roles || ['user'],
-    };
-    this.users.push(newUser);
-    return this.users;
+  async create(userDto: UsersDto): Promise<User> {
+    const { roles: roleNames, ...userData } = userDto;
+    const newUser = this.userRepository.create(userData);
+    
+    // Set default roles if not provided
+    const defaultRoleNames = roleNames || ['user'];
+    const roles = await this.rolesService.findByNames(defaultRoleNames);
+    newUser.roles = roles;
+    
+    return this.userRepository.save(newUser);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(id: string, user: User) {
+  async update(id: number, updateData: Partial<User>): Promise<User | null> {
+    await this.userRepository.update(id, updateData);
     return this.findOne(id);
   }
 
-  remove(id: string) {
-    return this.findOne(id);
+  async remove(id: number): Promise<boolean> {
+    const result = await this.userRepository.delete(id);
+    return result.affected ? result.affected > 0 : false;
   }
 }

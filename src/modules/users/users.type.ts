@@ -1,15 +1,7 @@
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-  mobile: string;
-  username: string;
-  roles: string[];
-};
+export { User } from './entities/user.entity';
 
 export interface UserFilter {
-  id?: string;
+  id?: number;
   name?: string;
   email?: string;
   mobile?: string;

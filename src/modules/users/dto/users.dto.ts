@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 
 export class UsersDto {
-  id: string;
+  id?: number;
 
   @IsString()
   @IsNotEmpty()
