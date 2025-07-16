@@ -1,14 +1,17 @@
 export type User = {
-  id: number;
+  id: string;
   name: string;
   email: string;
   password: string;
   mobile: string;
+  username: string;
+  roles: string[];
 };
 
 export interface UserFilter {
-  id?: number;
+  id?: string;
   name?: string;
   email?: string;
   mobile?: string;
+  username?: string;
 }
