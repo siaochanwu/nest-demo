@@ -61,16 +61,4 @@ export class AuthService {
       },
     };
   }
-
-  async validateToken(token: string): Promise<JwtPayload> {
-    try {
-      return this.jwtService.verify(token);
-    } catch {
-      throw new UnauthorizedException('Invalid token');
-    }
-  }
-
-  generateToken(payload: JwtPayload): string {
-    return this.jwtService.sign(payload);
-  }
 }

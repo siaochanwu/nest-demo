@@ -7,6 +7,9 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RolesModule } from './modules/roles/roles.module';
+import { CustomersModule } from './modules/customers/customers.module';
+import { ServicesModule } from './modules/services/services.module';
+import { AppointmentsModule } from './modules/appointments/appointments.module';
 import { databaseConfig } from './config/database.config';
 
 @Module({
@@ -15,6 +18,9 @@ import { databaseConfig } from './config/database.config';
     UsersModule,
     AuthModule,
     RolesModule,
+    CustomersModule,
+    ServicesModule,
+    AppointmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
